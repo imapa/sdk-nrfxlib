@@ -664,6 +664,60 @@ out:
 	return status;
 }
 
+
+enum nrf_wifi_status nrf_wifi_fmac_rf_get_bat_volt(struct nrf_wifi_fmac_dev_ctx *fmac_dev_ctx)
+{
+	enum nrf_wifi_status status = NRF_WIFI_STATUS_FAIL;
+	struct nrf_wifi_temperature_params rf_test_get_temperature;
+	struct nrf_wifi_fmac_dev_ctx_rt *rt_dev_ctx = NULL;
+	unsigned int count = 0;
+
+	rt_dev_ctx = wifi_dev_priv(fmac_dev_ctx);
+
+	nrf_wifi_osal_mem_set(fmac_dev_ctx->fpriv->opriv,
+			      &rf_test_get_temperature,
+			      0,
+			      sizeof(rf_test_get_temperature));
+
+	rf_test_get_temperature.test = NRF_WIFI_RF_TEST_GET_BAT_VOLT;
+
+	rt_dev_ctx->rf_test_type = NRF_WIFI_RF_TEST_GET_BAT_VOLT;
+	rt_dev_ctx->rf_test_cap_data = NULL;
+	rt_dev_ctx->rf_test_cap_sz = 0;
+
+	status = umac_cmd_prog_rf_test(fmac_dev_ctx,
+					   &rf_test_get_temperature,
+					   sizeof(rf_test_get_temperature));
+
+	if (status != NRF_WIFI_STATUS_SUCCESS) {
+		nrf_wifi_osal_log_err(fmac_dev_ctx->fpriv->opriv,
+				      "%s: umac_cmd_prog_rf_get_temperature failed",
+				      __func__);
+
+		goto out;
+	}
+
+	do {
+		nrf_wifi_osal_sleep_ms(fmac_dev_ctx->fpriv->opriv,
+				       100);
+		count++;
+	} while ((rt_dev_ctx->rf_test_type != NRF_WIFI_RF_TEST_MAX) &&
+		 (count < NRF_WIFI_FMAC_RF_TEST_EVNT_TIMEOUT));
+
+	if (count == NRF_WIFI_FMAC_RF_TEST_EVNT_TIMEOUT) {
+		nrf_wifi_osal_log_err(fmac_dev_ctx->fpriv->opriv,
+				      "%s: Timed out",
+				      __func__);
+		rt_dev_ctx->rf_test_type = NRF_WIFI_RF_TEST_MAX;
+		rt_dev_ctx->rf_test_cap_data = NULL;
+		status = NRF_WIFI_STATUS_FAIL;
+		goto out;
+	}
+
+out:
+	return status;
+}
+
 enum nrf_wifi_status nrf_wifi_fmac_rf_get_rf_rssi(struct nrf_wifi_fmac_dev_ctx *fmac_dev_ctx)
 {
 	enum nrf_wifi_status status = NRF_WIFI_STATUS_FAIL;

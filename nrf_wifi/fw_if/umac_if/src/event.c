@@ -786,6 +786,8 @@ static enum nrf_wifi_status umac_event_rf_test_process(struct nrf_wifi_fmac_dev_
 	struct nrf_wifi_rf_test_xo_calib xo_calib_params;
 	struct nrf_wifi_rf_get_xo_value rf_get_xo_value_params;
 	struct nrf_wifi_fmac_dev_ctx_rt *def_dev_ctx;
+	struct nrf_wifi_bat_volt_params bat_volt_params;
+	double voltage;
 
 	def_dev_ctx = wifi_dev_priv(fmac_dev_ctx);
 
@@ -835,6 +837,26 @@ static enum nrf_wifi_status umac_event_rf_test_process(struct nrf_wifi_fmac_dev_
 			rf_test_get_temperature.temperature);
 		}
 		break;
+
+	case NRF_WIFI_RF_TEST_EVENT_GET_BAT_VOLT:
+		nrf_wifi_osal_mem_cpy(fmac_dev_ctx->fpriv->opriv, &bat_volt_params,
+			(const unsigned char *)&rf_test_event->rf_test_info.rfevent[0],
+			sizeof(bat_volt_params));
+
+		if (bat_volt_params.cmd_status) {
+			nrf_wifi_osal_log_err(fmac_dev_ctx->fpriv->opriv,
+			"Volatge reading failed");
+		} else {
+			voltage = BAT_CONST_1 + (BAT_CONST_2 * bat_volt_params.voltage);
+			nrf_wifi_osal_log_info(fmac_dev_ctx->fpriv->opriv,
+			"The battery voltage is = %lf Volts",
+			voltage);
+			voltage = BAT_CONST_1 + (BAT_CONST_2 * bat_volt_params.voltage);
+			nrf_wifi_osal_log_info(fmac_dev_ctx->fpriv->opriv,
+			"The battery voltage is = %d Volts",
+			bat_volt_params.voltage);			
+		}
+		break;		
 	case NRF_WIFI_RF_TEST_EVENT_RF_RSSI:
 		nrf_wifi_osal_mem_cpy(fmac_dev_ctx->fpriv->opriv, &rf_get_rf_rssi,
 			(const unsigned char *)&rf_test_event->rf_test_info.rfevent[0],
