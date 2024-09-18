@@ -88,12 +88,6 @@
 #define RX_GAIN_OFFSET_HB_MID_CHAN 0
 #define RX_GAIN_OFFSET_HB_HIGH_CHAN 0
 
-/** Systematic error between set power and measured power in dBm */
-#define SYSTEM_OFFSET_LB 3
-#define SYSTEM_OFFSET_HB_CHAN_LOW 3
-#define SYSTEM_OFFSET_HB_CHAN_MID 3
-#define SYSTEM_OFFSET_HB_CHAN_HIGH 3
-
 /** End of package independent params */
 
 
@@ -101,6 +95,12 @@
 
 /** XO adjustment value */
 #define QFN_XO_VAL 0x2A
+
+/** Systematic error between set power and measured power in dBm */
+#define QFN_SYSTEM_OFFSET_LB 3
+#define QFN_SYSTEM_OFFSET_HB_CHAN_LOW 3
+#define QFN_SYSTEM_OFFSET_HB_CHAN_MID 3
+#define QFN_SYSTEM_OFFSET_HB_CHAN_HIGH 3
 
 /** Max TX power allowed for DSSS and OFDM in 2.4GHz band */
 #define QFN_MAX_TX_PWR_DSSS 0x54
@@ -153,6 +153,12 @@
 
 /** XO adjustment value */
 #define CSP_XO_VAL 0x2A
+
+/** Systematic error between set power and measured power in dBm */
+#define CSP_SYSTEM_OFFSET_LB 5
+#define CSP_SYSTEM_OFFSET_HB_CHAN_LOW 5
+#define CSP_SYSTEM_OFFSET_HB_CHAN_MID 5
+#define CSP_SYSTEM_OFFSET_HB_CHAN_HIGH 5
 
 /** Max TX power allowed for DSSS and OFDM in 2.4GHz band */
 #define CSP_MAX_TX_PWR_DSSS 0x48
